@@ -1,0 +1,13 @@
+*.log
+.proxy*.env
+.gdbinit
+.atom-gdb.json
+.dockerfile.machine
+docker-machine*
+*.log
+*.iml
+.idea/
+./bin
+cover
+Godeps/_workspace/src/github.com/Pooja-S-Rao/
+.glide
