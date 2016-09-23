@@ -14,6 +14,7 @@ import (
 	"github.com/docker/machine/libmachine/mcnflag"
 	"github.com/docker/machine/libmachine/ssh"
 	"github.com/docker/machine/libmachine/state"
+	"github.com/docker/machine/libmachine/provision"
 )
 
 // Driver OneView driver structures
@@ -31,6 +32,7 @@ type Driver struct {
 	ServerTemplate       string
 	PublicSlotID         int
 	PublicConnectionName string
+	DockerVersion        string
 	Profile              ov.ServerProfile
 	Hardware             ov.ServerHardware
 	Server               icsp.Server
@@ -171,6 +173,12 @@ func (d *Driver) GetCreateFlags() []mcnflag.Flag {
 			Value:  "",
 			EnvVar: "ONEVIEW_PUBLIC_CONNECTION_NAME",
 		},
+		mcnflag.StringFlag{
+			Name:  "docker-version",
+			Usage: "Optional if docker version is not specified then default version is considered",
+			Value: "",
+			EnvVar: "DOCKER_VERSION",
+		},
 	}
 }
 
@@ -219,6 +227,7 @@ func (d *Driver) SetConfigFromFlags(flags drivers.DriverOptions) error {
 
 	d.PublicSlotID = flags.Int("oneview-public-slotid")
 	d.PublicConnectionName = flags.String("oneview-public-connection-name")
+	d.DockerVersion = flags.String("docker-version")
 
 	d.SSHUser = flags.String("oneview-ssh-user")
 	d.SSHPort = flags.Int("oneview-ssh-port")
@@ -330,6 +339,13 @@ func (d *Driver) Create() error {
 		publicmac = conn.MAC.String()
 	} else {
 		publicmac = ""
+	}
+	
+	if d.DockerVersion != "" {
+		err := d.dockerVersion(d.DockerVersion)
+		if err != nil{
+			return err
+		}
 	}
 
 	// arguments for customize server
