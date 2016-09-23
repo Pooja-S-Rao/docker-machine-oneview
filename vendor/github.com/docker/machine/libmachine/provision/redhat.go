@@ -19,6 +19,7 @@ import (
 
 var (
 	ErrUnknownYumOsRelease = errors.New("unknown OS for Yum repository")
+	doc_version=""
 
 	packageListTemplate = `[docker]
 name=Docker Stable Repository
@@ -71,6 +72,10 @@ type RedHatProvisioner struct {
 
 func (provisioner *RedHatProvisioner) String() string {
 	return "redhat"
+}
+
+func dockerVersion(docker_version string){
+	doc_version=docker_version
 }
 
 func (provisioner *RedHatProvisioner) SetHostname(hostname string) error {
@@ -165,7 +170,7 @@ func (provisioner *RedHatProvisioner) Provision(swarmOptions swarm.Options, auth
 
 	for _, pkg := range provisioner.Packages {
 		log.Debugf("installing base package: name=%s", pkg)
-		if err := provisioner.Package(pkg, pkgaction.Install); err != nil {
+		if err := provisioner.Package(pkg, pkgaction.Install doc_version); err != nil {
 			return err
 		}
 	}
