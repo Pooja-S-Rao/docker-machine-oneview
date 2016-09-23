@@ -126,6 +126,7 @@ semverParse() {
 }
 
 do_install() {
+	doc_ver=$1
 	case "$(uname -m)" in
 		*64)
 			;;
@@ -458,11 +459,20 @@ do_install() {
 			if [ "$lsb_dist" = "fedora" ] && [ "$dist_version" -ge "22" ]; then
 				(
 					set -x
+					if ["$doc_ver" != ""];then
+					$sh_c 'sleep 3; dnf -y -q install docker-engine-'"${doc_ver}"''
+					else 
 					$sh_c 'sleep 3; dnf -y -q install docker-engine'
+					fi
 				)
 			else
 				(
 					set -x
+				        if ["$doc_ver" != ""];then
+					$sh_c 'sleep 3; dnf -y -q install docker-engine-'"${doc_ver}"''
+					else 
+					$sh_c 'sleep 3; dnf -y -q install docker-engine'
+					fi
 					$sh_c 'sleep 3; yum -y -q install docker-engine'
 				)
 			fi
